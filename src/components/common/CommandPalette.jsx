@@ -10,6 +10,7 @@ export default function CommandPalette({ open, onClose, onRun }) {
     { k: 'Ir a Datos & Ingesta', cmd: 'open:data' },
     { k: 'Ir a Mapas 2D', cmd: 'open:maps2d' },
     { k: 'Ir a Prospectividad 3D', cmd: 'open:prospect3d' },
+    { k: 'Ir a Targets & Ranking', cmd: 'open:targets' },
     { k: 'Exportar deck', cmd: 'export:deck' },
   ];
 
@@ -20,7 +21,10 @@ export default function CommandPalette({ open, onClose, onRun }) {
   return (
     <div className="fixed inset-0 z-[70] flex items-start justify-center pt-24" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60" />
-      <div className={cx('w-[680px] mx-4 rounded-2xl border', brand.glass, brand.border)} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={cx('w-[680px] mx-4 rounded-2xl border', brand.glass, brand.border)}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-3">
           <input
             autoFocus
