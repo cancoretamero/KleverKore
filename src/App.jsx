@@ -7,6 +7,7 @@ import Home from './modules/Home.jsx';
 import DataIngesta from './modules/DataIngesta.jsx';
 import Maps2D from './modules/Maps2D.jsx';
 import Prospect3D from './modules/Prospect3D.jsx';
+import Targets from './modules/Targets.jsx';
 import CommandPalette from './components/common/CommandPalette.jsx';
 import { useToasts } from './components/common/Toaster.jsx';
 
@@ -32,6 +33,7 @@ export default function App() {
     { id: 'data', label: 'Datos & Ingesta', icon: '🗂️' },
     { id: 'maps2d', label: 'Mapas 2D', icon: '🗺️' },
     { id: 'prospect3d', label: 'Prospectividad 3D', icon: '✨' },
+    { id: 'targets', label: 'Targets & Ranking', icon: '🎯' },
   ];
 
   const Content = () => {
@@ -39,6 +41,7 @@ export default function App() {
     if (moduleId === 'data') return <DataIngesta />;
     if (moduleId === 'maps2d') return <Maps2D />;
     if (moduleId === 'prospect3d') return <Prospect3D />;
+    if (moduleId === 'targets') return <Targets />;
     return null;
   };
 
