@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base global, modo oscuro */
+:root { color-scheme: dark; }
+html, body, #root { height: 100%; }
+body { background: #0b0d0e; } /* antracita */
