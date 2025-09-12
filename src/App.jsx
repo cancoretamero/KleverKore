@@ -1,19 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { brand } from './theme/brand';
 import { cx } from './lib/cx.js';
 import Sidebar from './layout/Sidebar.jsx';
 import Topbar from './layout/Topbar.jsx';
 import Home from './modules/Home.jsx';
 import DataIngesta from './modules/DataIngesta.jsx';
+import CommandPalette from './components/common/CommandPalette.jsx';
+import { useToasts } from './components/common/Toaster.jsx';
 
 export default function App() {
   const [scenario, setScenario] = useState('v1.2_gate4');
   const [moduleId, setModuleId] = useState('home');
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const { push, UI: Toasts } = useToasts();
+
+  // Abrir/cierrar palette con ⌘/Ctrl+K
+  useEffect(() => {
+    const handleKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
 
   const modules = [
     { id: 'home', label: 'Inicio', icon: '🏠' },
     { id: 'data', label: 'Datos & Ingesta', icon: '🗂️' },
-    // seguiremos añadiendo módulos aquí
+    // añadiremos más módulos aquí
   ];
 
   const Content = () => {
@@ -21,6 +37,24 @@ export default function App() {
     if (moduleId === 'data') return <DataIngesta />;
     return null;
   };
+
+  function onPaletteRun(cmd) {
+    if (cmd === 'toggle') {
+      setPaletteOpen((v) => !v);
+      return;
+    }
+    if (cmd.startsWith('open:')) {
+      const id = cmd.split(':')[1];
+      setModuleId(id);
+      setPaletteOpen(false);
+      return;
+    }
+    if (cmd.startsWith('export:')) {
+      push('Exportación iniciada (simulado)');
+      setPaletteOpen(false);
+      return;
+    }
+  }
 
   return (
     <div className="relative w-full h-[100vh]" style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto' }}>
@@ -54,6 +88,9 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} onRun={onPaletteRun} />
+      {Toasts}
     </div>
   );
 }
