@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { brand } from './theme/brand';
 import { cx } from './lib/cx.js';
+import Sidebar from './layout/Sidebar.jsx';
+import Topbar from './layout/Topbar.jsx';
+import Home from './modules/Home.jsx';
 
 export default function App() {
+  const [scenario, setScenario] = useState('v1.2_gate4');
+  const [moduleId, setModuleId] = useState('home');
+
+  const modules = [
+    { id: 'home', label: 'Inicio', icon: '🏠' },
+    // añadiremos más módulos en pasos siguientes
+  ];
+
+  const Content = () => {
+    if (moduleId === 'home') return <Home />;
+    return null;
+  };
+
   return (
-    <div className="relative w-full h-[100vh] text-white" style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto' }}>
+    <div className="relative w-full h-[100vh]" style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto' }}>
       {/* Fondo antracita + Liquid Glass sutil SIEMPRE */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0" style={{ background: brand.bg }} />
@@ -26,17 +42,16 @@ export default function App() {
         </div>
       </div>
 
-      {/* Shell minimal — verificamos que todo compila */}
-      <div className={cx('max-w-6xl mx-auto px-4 py-8 space-y-4')}>
-        <h1 className="text-2xl font-semibold">KleverKore Dashboard · Shell</h1>
-        <p className={brand.dim}>
-          Si ves este título con fondo negro antracita y brillos “líquidos”, la base está OK.
-          En el siguiente paso añadiremos <strong>sidebar</strong>, <strong>topbar</strong> y los primeros <strong>widgets</strong>.
-        </p>
-        <div className={cx('rounded-2xl border p-6', brand.glass, brand.border)}>
-          <div className="text-white/80">Panel de prueba</div>
-          <div className="text-white/60 text-sm">Aquí irán los componentes del dashboard.</div>
-        </div>
+      <div className="absolute inset-0 grid grid-cols-[240px_1fr] text-white">
+      {/* Barra lateral */}
+        <Sidebar modules={modules} moduleId={moduleId} setModuleId={setModuleId} />
+        {/* Área principal: Topbar + Contenido */}
+        <main className="h-full grid grid-rows-[56px_1fr]">
+          <Topbar scenario={scenario} setScenario={setScenario} />
+          <div className="overflow-auto">
+            <Content />
+          </div>
+        </main>
       </div>
     </div>
   );
