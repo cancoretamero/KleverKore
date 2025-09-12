@@ -4,6 +4,7 @@ import { cx } from './lib/cx.js';
 import Sidebar from './layout/Sidebar.jsx';
 import Topbar from './layout/Topbar.jsx';
 import Home from './modules/Home.jsx';
+import DataIngesta from './modules/DataIngesta.jsx';
 
 export default function App() {
   const [scenario, setScenario] = useState('v1.2_gate4');
@@ -11,11 +12,13 @@ export default function App() {
 
   const modules = [
     { id: 'home', label: 'Inicio', icon: '🏠' },
-    // añadiremos más módulos en pasos siguientes
+    { id: 'data', label: 'Datos & Ingesta', icon: '🗂️' },
+    // seguiremos añadiendo módulos aquí
   ];
 
   const Content = () => {
     if (moduleId === 'home') return <Home />;
+    if (moduleId === 'data') return <DataIngesta />;
     return null;
   };
 
@@ -43,9 +46,7 @@ export default function App() {
       </div>
 
       <div className="absolute inset-0 grid grid-cols-[240px_1fr] text-white">
-      {/* Barra lateral */}
         <Sidebar modules={modules} moduleId={moduleId} setModuleId={setModuleId} />
-        {/* Área principal: Topbar + Contenido */}
         <main className="h-full grid grid-rows-[56px_1fr]">
           <Topbar scenario={scenario} setScenario={setScenario} />
           <div className="overflow-auto">
