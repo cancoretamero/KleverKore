@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { cx } from '../../lib/cx.js';
 import { brand } from '../../theme/brand';
 
 export default function CommandPalette({ open, onClose, onRun }) {
   const [query, setQuery] = useState('');
 
-  // Ajuste: no maneja ⌘/Ctrl+K aquí; lo hará la App
   const actions = [
     { k: 'Ir a Inicio', cmd: 'open:home' },
     { k: 'Ir a Datos & Ingesta', cmd: 'open:data' },
+    { k: 'Ir a Mapas 2D', cmd: 'open:maps2d' },
+    { k: 'Ir a Prospectividad 3D', cmd: 'open:prospect3d' },
     { k: 'Exportar deck', cmd: 'export:deck' },
   ];
+
   const filtered = actions.filter((a) => a.k.toLowerCase().includes(query.toLowerCase()));
 
   if (!open) return null;
