@@ -1,0 +1,7 @@
+services:
+  - type: static
+    name: kleverkore-dashboard
+    env: node
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: true
