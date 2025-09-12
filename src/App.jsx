@@ -5,6 +5,8 @@ import Sidebar from './layout/Sidebar.jsx';
 import Topbar from './layout/Topbar.jsx';
 import Home from './modules/Home.jsx';
 import DataIngesta from './modules/DataIngesta.jsx';
+import Maps2D from './modules/Maps2D.jsx';
+import Prospect3D from './modules/Prospect3D.jsx';
 import CommandPalette from './components/common/CommandPalette.jsx';
 import { useToasts } from './components/common/Toaster.jsx';
 
@@ -14,7 +16,6 @@ export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { push, UI: Toasts } = useToasts();
 
-  // Abrir/cierrar palette con ⌘/Ctrl+K
   useEffect(() => {
     const handleKey = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -29,12 +30,15 @@ export default function App() {
   const modules = [
     { id: 'home', label: 'Inicio', icon: '🏠' },
     { id: 'data', label: 'Datos & Ingesta', icon: '🗂️' },
-    // añadiremos más módulos aquí
+    { id: 'maps2d', label: 'Mapas 2D', icon: '🗺️' },
+    { id: 'prospect3d', label: 'Prospectividad 3D', icon: '✨' },
   ];
 
   const Content = () => {
     if (moduleId === 'home') return <Home />;
     if (moduleId === 'data') return <DataIngesta />;
+    if (moduleId === 'maps2d') return <Maps2D />;
+    if (moduleId === 'prospect3d') return <Prospect3D />;
     return null;
   };
 
