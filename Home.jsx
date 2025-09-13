@@ -4,199 +4,412 @@ import Sparkline from '../components/widgets/Sparkline';
 import RadialGauge from '../components/widgets/RadialGauge';
 import NeonGridPanel from '../components/neon/NeonGridPanel';
 
-// Home page revamped with modern, dark liquid-glass look and many widgets
-// Shows multiple KPIs, distribution bars, status bars, anomaly rankings, and interactive map preview
+/*
+ * Home — KleverKore Dashboard (Ultra Edition)
+ *
+ * Esta pantalla de inicio lleva la estética del cristal líquido y la
+ * interactividad al extremo. Está pensada como la carta de
+ * presentación del futuro de la minería: un interfaz oscuro,
+ * futurista y repleto de métricas y utilidades. Todos los datos
+ * mostrados a continuación son ficticios y están declarados al
+ * comienzo del componente, de modo que puedan ser sustituidos
+ * fácilmente por datos reales provenientes de la API de KleverKore.
+ *
+ * La estructura se divide en varias filas y columnas para lograr
+ * un diseño responsive. Cada tarjeta utiliza componentes de alto
+ * nivel (Gauge, Sparkline, Barras) para ofrecer una gran densidad
+ * informativa sin sacrificar legibilidad. Los colores se basan en
+ * la paleta cian/naranja y se combinan con fondos translúcidos
+ * para simular el efecto glassmorphism oscuro.
+ */
 
-// Helper component: horizontal bar showing distribution of deposit styles
-function DistributionBar({ data }) {
-  // data: array of { label, color, value } where value is a percentage (0–100)
-  const total = data.reduce((sum, seg) => sum + seg.value, 0);
+// Barras apiladas para representar distribuciones. Recibe un array de
+// objetos con label, value y color. Calcula el ancho proporcional.
+function StackedBar({ data }) {
+  const total = data.reduce((sum, d) => sum + d.value, 0) || 1;
   return (
-    <div className="w-full h-3 flex rounded-full overflow-hidden">
-      {data.map((seg, idx) => (
+    <div className="w-full h-3 flex overflow-hidden rounded-full bg-white/5">
+      {data.map((d, i) => (
         <div
-          key={idx}
-          style={{ flex: seg.value, backgroundColor: seg.color }}
-          className="h-full"
+          key={i}
+          style={{ width: `${(d.value / total) * 100}%`, backgroundColor: d.color }}
         />
       ))}
     </div>
   );
 }
 
-// Helper component: simple horizontal status bar for ingestion statuses
-function StatusBar({ data }) {
+// Lista de KPIs con barra de progreso. Cada elemento lleva su color.
+function KPIList({ items }) {
   return (
-    <div className="w-full h-3 flex rounded-full overflow-hidden">
-      {data.map((seg, idx) => (
-        <div
-          key={idx}
-          style={{ flex: seg.value, backgroundColor: seg.color }}
-          className="h-full"
-        />
-      ))}
-    </div>
-  );
-}
-
-export default function Home() {
-  // Sample data for deposit styles distribution
-  const depositDistribution = [
-    { label: 'Carlin-like', value: 40, color: '#67e8f9' },
-    { label: 'Pórfido', value: 35, color: '#ff9a62' },
-    { label: 'Skarn/IOCG', value: 25, color: '#4ade80' },
-  ];
-
-  // Sample data for ingestion & quality statuses
-  const ingestionStatuses = [
-    { label: 'Completado', value: 60, color: '#4ade80' },
-    { label: 'Validando', value: 25, color: '#facc15' },
-    { label: 'Pendiente', value: 15, color: '#f87171' },
-  ];
-
-  // Sample top anomalies list for ranking
-  const anomalies = [
-    { id: 'A1', score: 0.91 },
-    { id: 'A2', score: 0.84 },
-    { id: 'A3', score: 0.77 },
-    { id: 'A4', score: 0.72 },
-    { id: 'B1', score: 0.69 },
-  ];
-
-  return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-min">
-      {/* Row 1: Key KPI cards */}
-      <GlassCard className="p-4">
-        <div className="text-white/60 text-xs uppercase tracking-wider">Cobertura de datos</div>
-        <div className="text-3xl font-semibold text-white">78%</div>
-        <div className="flex items-center justify-between mt-3">
-          <span className="text-white/60 text-xs">mag/radio/AEM/MT/IP</span>
-          <Sparkline />
-        </div>
-      </GlassCard>
-
-      <GlassCard className="p-4">
-        <div className="text-white/60 text-xs uppercase tracking-wider">Índice prospectivo medio</div>
-        <RadialGauge value={0.74} label="P (media)" />
-      </GlassCard>
-
-      <GlassCard className="p-4">
-        <div className="text-white/60 text-xs uppercase tracking-wider">Targets detectados</div>
-        <div className="text-3xl font-semibold text-white">83</div>
-        <div className="mt-2 text-white/60 text-xs">A: 12 · B: 23 · C: 48</div>
-        {/* mini distribution bar for classes */}
-        <div className="mt-3">
-          <DistributionBar
-            data={[
-              { label: 'A', value: 12, color: '#84cc16' },
-              { label: 'B', value: 23, color: '#eab308' },
-              { label: 'C', value: 48, color: '#f97316' },
-            ]}
-          />
-          <div className="flex justify-between mt-1 text-[11px] text-white/60">
-            <span>A</span>
-            <span>B</span>
-            <span>C</span>
+    <div className="space-y-2 mt-3">
+      {items.map((item, i) => (
+        <div key={i} className="flex items-center justify-between text-xs text-white/70">
+          <span className="whitespace-nowrap mr-2">{item.label}</span>
+          <div className="flex-1 h-2 ml-2 bg-white/10 rounded-full overflow-hidden">
+            <div
+              style={{ width: `${item.value * 100}%`, backgroundColor: item.color }}
+              className="h-full"
+            />
           </div>
+          <span className="ml-2 text-white/60">{Math.round(item.value * 100)}%</span>
         </div>
-      </GlassCard>
+      ))}
+    </div>
+  );
+}
 
-      <GlassCard className="p-4">
-        <div className="text-white/60 text-xs uppercase tracking-wider">Pozos (propuestos / ejecutados)</div>
-        <div className="text-3xl font-semibold text-white">15 / 8</div>
-        <div className="mt-2 text-white/60 text-xs">Plan 1–3–1 en curso</div>
-        <div className="mt-3 w-full h-3 flex rounded-full overflow-hidden">
-          <div style={{ flex: 8, backgroundColor: '#22c55e' }} className="h-full" />
-          <div style={{ flex: 7, backgroundColor: '#1e40af' }} className="h-full" />
-        </div>
-        <div className="flex justify-between mt-1 text-[11px] text-white/60">
-          <span>Ejecutados</span>
-          <span>Propuestos</span>
-        </div>
-      </GlassCard>
+// Lista de anomalías destacadas. Muestra un gauge miniatura y el estilo.
+function TopAnomalies({ anomalies }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+      {anomalies.map((a) => (
+        <GlassCard key={a.id} className="p-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs text-white/60 uppercase tracking-wider">
+                {a.id}
+              </div>
+              <div className="text-lg font-semibold text-white">
+                {Math.round(a.score * 100)}%
+              </div>
+            </div>
+            <RadialGauge value={a.score} size={60} label="" />
+          </div>
+          <div className="mt-1 text-xs text-white/50">
+            Estilo: {a.style}
+          </div>
+        </GlassCard>
+      ))}
+    </div>
+  );
+}
 
-      {/* Row 2: Large map preview and distribution/status cards */}
-      <div className="lg:col-span-3 sm:col-span-2 col-span-1">
-        <NeonGridPanel
-          title="Mapa de prospectividad (0–100 m)"
-          height={360}
-        />
+// Botones de acciones rápidas. Pueden ser emojis o iconos SVG.
+function QuickActions({ actions }) {
+  return (
+    <div className="grid grid-cols-2 gap-3 mt-3">
+      {actions.map((act, i) => (
+        <button
+          key={i}
+          className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 bg-white/10 hover:bg-white/20 rounded-xl transition"
+        >
+          <span className="text-lg">{act.icon}</span>
+          <span>{act.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Tarjeta para mostrar tendencias en forma de mini gráficos de líneas. Recibe
+// título, datos y un color opcional para el sparkline.
+function TrendCard({ title, data1, data2, label1, label2, color1, color2 }) {
+  return (
+    <GlassCard className="p-4">
+      <div className="text-white/60 text-xs uppercase tracking-wider">{title}</div>
+      <div className="mt-3 grid grid-cols-2 gap-4">
+        <div>
+          <Sparkline data={data1} stroke={color1} />
+          <div className="text-xs text-white/50 mt-1">{label1}</div>
+        </div>
+        <div>
+          <Sparkline data={data2} stroke={color2} />
+          <div className="text-xs text-white/50 mt-1">{label2}</div>
+        </div>
       </div>
+    </GlassCard>
+  );
+}
 
-      <GlassCard className="p-4 flex flex-col justify-between">
+// Tarjeta para mostrar eventos o notificaciones recientes.
+function NotificationsCard({ events }) {
+  return (
+    <GlassCard className="p-4">
+      <div className="text-white/60 text-xs uppercase tracking-wider">Notificaciones recientes</div>
+      <div className="mt-3 space-y-3">
+        {events.map((e, i) => (
+          <div key={i} className="flex items-start gap-2 text-sm text-white/80">
+            <div className="text-lg leading-none">{e.icon}</div>
+            <div className="flex-1">
+              <div className="font-medium text-white/80">{e.title}</div>
+              <div className="text-white/60 text-xs">{e.desc}</div>
+            </div>
+            <div className="text-white/50 text-xs whitespace-nowrap">{e.time}</div>
+          </div>
+        ))}
+      </div>
+    </GlassCard>
+  );
+}
+
+// Tarjeta para mostrar datasets recientes. Recibe un array de objetos con name,
+// status, quality y date.
+function RecentDataCard({ datasets }) {
+  return (
+    <GlassCard className="p-4">
+      <div className="text-white/60 text-xs uppercase tracking-wider">Últimos datasets</div>
+      <table className="w-full text-sm text-white/80 mt-3">
+        <thead className="text-white/50">
+          <tr>
+            <th className="py-1 text-left">Nombre</th>
+            <th className="py-1 text-left">Estado</th>
+            <th className="py-1 text-left">Calidad</th>
+            <th className="py-1 text-left">Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {datasets.map((d, i) => (
+            <tr key={i} className="border-t border-white/10 hover:bg-white/5">
+              <td className="py-1">{d.name}</td>
+              <td className="py-1">{d.status}</td>
+              <td className="py-1">{d.quality}</td>
+              <td className="py-1 whitespace-nowrap">{d.date}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </GlassCard>
+  );
+}
+
+// Tarjeta para mostrar pozo y ranking: targets, wells and plan vs execution.
+function TargetsWellsCard({ targets, wells }) {
+  const totalTargets = targets.A + targets.B + targets.C;
+  const targetsData = [
+    { label: 'A', value: targets.A, color: '#38bdf8' },
+    { label: 'B', value: targets.B, color: '#fbbf24' },
+    { label: 'C', value: targets.C, color: '#ef4444' },
+  ];
+  const wellsData = [
+    { label: 'Propuestos', value: wells.proposed, color: '#38bdf8' },
+    { label: 'Ejecutados', value: wells.executed, color: '#4ade80' },
+    { label: 'Pendientes', value: wells.pending, color: '#f97316' },
+  ];
+  const wellsTotal = wells.proposed + wells.executed + wells.pending;
+  return (
+    <GlassCard className="p-4">
+      <div className="text-white/60 text-xs uppercase tracking-wider">Targets y pozos</div>
+      <div className="mt-3 grid grid-cols-2 gap-4">
         <div>
-          <div className="text-white/80 font-medium">Distribución de estilos</div>
-          <DistributionBar data={depositDistribution} />
-          <div className="mt-3 space-y-1 text-[11px] text-white/60">
-            {depositDistribution.map((d, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span
-                  className="inline-block w-2 h-2 rounded-full"
-                  style={{ backgroundColor: d.color }}
-                />
-                <span>{d.label}</span>
-                <span className="ml-auto">{d.value}%</span>
+          <div className="text-white/80 text-sm font-medium">Total Targets: {totalTargets}</div>
+          <StackedBar data={targetsData.map(d => ({ value: d.value, color: d.color }))} />
+          <div className="mt-2 flex justify-between text-xs text-white/60">
+            {targetsData.map((d, i) => (
+              <div key={i} className="flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                {d.label}
               </div>
             ))}
           </div>
         </div>
-      </GlassCard>
-
-      <GlassCard className="p-4 flex flex-col justify-between">
         <div>
-          <div className="text-white/80 font-medium">Estado de ingesta & calidad</div>
-          <StatusBar data={ingestionStatuses} />
-          <div className="mt-3 space-y-1 text-[11px] text-white/60">
-            {ingestionStatuses.map((s, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span
-                  className="inline-block w-2 h-2 rounded-full"
-                  style={{ backgroundColor: s.color }}
-                />
-                <span>{s.label}</span>
-                <span className="ml-auto">{s.value}%</span>
+          <div className="text-white/80 text-sm font-medium">Pozos</div>
+          <StackedBar data={wellsData.map(d => ({ value: d.value, color: d.color }))} />
+          <div className="mt-2 flex justify-between text-xs text-white/60">
+            {wellsData.map((d, i) => (
+              <div key={i} className="flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                {d.label}
               </div>
             ))}
           </div>
         </div>
-      </GlassCard>
+      </div>
+    </GlassCard>
+  );
+}
 
-      {/* Row 3: Anomalies ranking and timeline */}
-      <GlassCard className="p-4 lg:col-span-4">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-          <div className="flex-1">
-            <div className="text-white/80 font-medium mb-2">Top anomalías IA</div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-              {anomalies.map((a) => (
-                <div key={a.id} className="flex flex-col items-center">
-                  <RadialGauge value={a.score} size={80} label={a.id} />
-                  <div className="text-white/80 text-xs mt-1">P{Math.round(a.score * 100)}%</div>
-                </div>
-              ))}
+// Componente principal de la pantalla de inicio
+export default function Home() {
+  /**
+   * Declaración de datos ficticios. Estos objetos pueden reemplazarse
+   * fácilmente por datos reales obtenidos desde APIs internas. Las
+   * estructuras se agrupan lógicamente para que sea sencillo
+   * alimentarlas con nuevos valores.
+   */
+  const kpi = {
+    coverage: 0.95,
+    avgProspectivity: 0.78,
+    targets: { A: 14, B: 28, C: 41 },
+    wells: { proposed: 12, executed: 5, pending: 3 },
+    prAUC: 0.87,
+    brier: 0.11,
+    reliability: 0.93,
+  };
+  const coverageBreakdown = [
+    { label: 'Mag', value: 0.9, color: '#38bdf8' },
+    { label: 'Rad', value: 0.85, color: '#67e8f9' },
+    { label: 'AEM', value: 0.8, color: '#a78bfa' },
+    { label: 'IP', value: 0.78, color: '#fb7185' },
+    { label: 'HSI', value: 0.68, color: '#fcd34d' },
+  ];
+  const styleDistribution = [
+    { label: 'Carlin', value: 0.32, color: '#38bdf8' },
+    { label: 'Epithermal', value: 0.28, color: '#a5b4fc' },
+    { label: 'Porphyry', value: 0.25, color: '#fbbf24' },
+    { label: 'Skarn/IOCG', value: 0.15, color: '#ec4899' },
+  ];
+  const ingestionStatus = [
+    { label: 'Listo', value: 0.55, color: '#4ade80' },
+    { label: 'Validando', value: 0.25, color: '#fcd34d' },
+    { label: 'Pendiente', value: 0.15, color: '#f97316' },
+    { label: 'Error', value: 0.05, color: '#ef4444' },
+  ];
+  const anomalies = [
+    { id: 'A1', score: 0.91, style: 'Carlin' },
+    { id: 'A2', score: 0.84, style: 'Epithermal' },
+    { id: 'B1', score: 0.76, style: 'Porphyry' },
+    { id: 'B2', score: 0.69, style: 'Skarn/IOCG' },
+    { id: 'C1', score: 0.63, style: 'Carlin' },
+  ];
+  const quickActions = [
+    { icon: '📂', label: 'Cargar datos' },
+    { icon: '🗺️', label: 'Mapa 2D' },
+    { icon: '📦', label: 'Volúmenes 3D' },
+    { icon: '✨', label: 'Prospectividad 3D' },
+    { icon: '🎯', label: 'Targets' },
+    { icon: '🛠️', label: 'Diseñar pozos' },
+    { icon: '🚦', label: 'Gate actual' },
+    { icon: '📤', label: 'Exportar' },
+  ];
+  const recentDatasets = [
+    { name: 'HSI—EMIT L2', status: 'Listo', quality: 'SNR 29 dB', date: '2025-09-10' },
+    { name: 'Mag—AGG', status: 'Validando', quality: 'QF OK', date: '2025-09-09' },
+    { name: 'AEM—SkyTEM', status: 'Pendiente', quality: '4/120 fallas', date: '2025-09-08' },
+    { name: 'Geoquímica—Lote 09', status: 'Listo', quality: 'Pass', date: '2025-09-05' },
+    { name: 'IP—Time-domain', status: 'Error', quality: 'SNR < 10 dB', date: '2025-09-02' },
+  ];
+  const events = [
+    { icon: '🟢', title: 'Ingesta completada', desc: 'HSI—EMIT L2', time: 'hace 1h' },
+    { icon: '🟡', title: 'Validando dataset', desc: 'Mag—AGG', time: 'hace 3h' },
+    { icon: '🔴', title: 'Error de calidad', desc: 'IP—Time-domain', time: 'ayer' },
+    { icon: '🟠', title: 'Nuevo target', desc: 'T-NE-08 añadido', time: 'hace 2d' },
+  ];
+  const trendData1 = [0.7, 0.72, 0.74, 0.75, 0.77, 0.78, 0.76, 0.79, 0.81, 0.82];
+  const trendData2 = [1.2, 1.35, 1.28, 1.45, 1.5, 1.56, 1.6, 1.58, 1.62, 1.65];
+
+  // Render principal
+  return (
+    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      {/* Fila 1: panel panorámico con mapa y KPIs resumidos */}
+      <GlassCard className="p-5 xl:col-span-3">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="col-span-2 relative">
+            <NeonGridPanel title="Mapa de prospectividad (0–100 m)" height={260} />
+            <div className="absolute bottom-3 right-3 backdrop-blur bg-black/40 text-white text-xs px-3 py-2 rounded-lg">
+              <div className="font-semibold text-lg">1.5M t</div>
+              <div className="text-[10px] text-white/70">Recurso estimado</div>
             </div>
           </div>
-          <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-white/10 pt-4 lg:pt-0 lg:pl-4">
-            <div className="text-white/80 font-medium mb-2">Timeline de Gates</div>
-            {[{ m: 'Preparación', s: 'verde' }, { m: 'Revisión', s: 'ámbar' }, { m: 'Decisión', s: 'rojo' }].map((x, i) => (
-              <div key={i} className="flex items-center justify-between py-1">
-                <div className="text-white/80">{x.m}</div>
-                <span
-                  className={
-                    'text-xs px-2 py-0.5 rounded-full ' +
-                    (x.s === 'verde'
-                      ? 'bg-emerald-500/20 text-emerald-300'
-                      : x.s === 'ámbar'
-                      ? 'bg-yellow-500/20 text-yellow-300'
-                      : 'bg-red-500/20 text-red-300')
-                  }
-                >
-                  {x.s.toUpperCase()}
-                </span>
-              </div>
-            ))}
+          <div className="flex flex-col justify-between">
+            <div>
+              <div className="text-xs text-white/60 uppercase">Modelo actual</div>
+              <div className="text-lg text-white font-semibold">GeoNet v3.3</div>
+            </div>
+            <div>
+              <div className="text-xs text-white/60 uppercase">Gate activo</div>
+              <div className="text-lg text-white font-semibold">Gate 5</div>
+            </div>
+            <div>
+              <div className="text-xs text-white/60 uppercase">Cobertura total</div>
+              <div className="text-lg text-white font-semibold">{Math.round(kpi.coverage * 100)}%</div>
+            </div>
+            <div>
+              <div className="text-xs text-white/60 uppercase">Anomalías activas</div>
+              <div className="text-lg text-white font-semibold">{anomalies.filter(a => a.score >= 0.6).length}</div>
+            </div>
           </div>
         </div>
       </GlassCard>
+
+      {/* Fila 2: tarjetas de cobertura/modelo/performance */}
+      <GlassCard className="p-4">
+        <div className="text-white/60 text-xs uppercase tracking-wider">Cobertura de datos</div>
+        <div className="mt-3 flex items-end gap-4">
+          <RadialGauge value={kpi.coverage} size={100} label="Cobertura" />
+          <div className="flex-1">
+            <KPIList items={coverageBreakdown} />
+          </div>
+        </div>
+      </GlassCard>
+      <GlassCard className="p-4">
+        <div className="text-white/60 text-xs uppercase tracking-wider">Índice prospectivo medio</div>
+        <div className="flex items-center gap-4 mt-3">
+          <RadialGauge value={kpi.avgProspectivity} size={100} label="Avg PI" />
+          <div className="flex flex-col gap-2 text-xs text-white/60">
+            <div>PI Actual: {(kpi.avgProspectivity * 100).toFixed(1)}%</div>
+            <div>PI Objetivo: 85%</div>
+            <div>Desviación: -7%</div>
+          </div>
+        </div>
+      </GlassCard>
+      <GlassCard className="p-4">
+        <div className="text-white/60 text-xs uppercase tracking-wider">Performance del modelo</div>
+        <div className="grid grid-cols-3 gap-4 mt-3">
+          <div className="flex flex-col items-center">
+            <RadialGauge value={kpi.prAUC} size={80} label="PR-AUC" />
+            <div className="text-xs text-white/60 mt-1">0.90 Meta</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <RadialGauge value={1 - kpi.brier} size={80} label="1-Brier" />
+            <div className="text-xs text-white/60 mt-1">Brier: {kpi.brier.toFixed(2)}</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <RadialGauge value={kpi.reliability} size={80} label="Reliability" />
+            <div className="text-xs text-white/60 mt-1">Meta ≥0.95</div>
+          </div>
+        </div>
+      </GlassCard>
+
+      {/* Fila 3: tarjetas de distribución, tendencia y notificaciones */}
+      <GlassCard className="p-4">
+        <div className="text-white/60 text-xs uppercase tracking-wider">Distribución de estilos</div>
+        <StackedBar data={styleDistribution.map(d => ({ value: d.value, color: d.color }))} />
+        <div className="flex justify-between mt-3 text-xs text-white/60">
+          {styleDistribution.map((d, i) => (
+            <div key={i} className="flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+              {d.label}
+            </div>
+          ))}
+        </div>
+      </GlassCard>
+      <TrendCard
+        title="Tendencias de prospectividad y recurso"
+        data1={trendData1}
+        data2={trendData2}
+        label1="Prospectividad media (PI)"
+        label2="Volumen estimado (Mt)"
+        color1="#38bdf8"
+        color2="#fb7185"
+      />
+      <NotificationsCard events={events} />
+
+      {/* Fila 4: tarjetas de targets/wells, anomalías y quick actions, datasets recientes */}
+      <TargetsWellsCard targets={kpi.targets} wells={kpi.wells} />
+      <GlassCard className="p-4">
+        <div className="text-white/60 text-xs uppercase tracking-wider">Anomalías principales</div>
+        <TopAnomalies anomalies={anomalies.slice(0, 4)} />
+      </GlassCard>
+      <GlassCard className="p-4">
+        <div className="text-white/60 text-xs uppercase tracking-wider">Acciones rápidas</div>
+        <QuickActions actions={quickActions} />
+      </GlassCard>
+      {/* Fila 5: datasets recientes y estado de ingesta */}
+      <GlassCard className="p-4">
+        <div className="text-white/60 text-xs uppercase tracking-wider">Estado de ingesta</div>
+        <StackedBar data={ingestionStatus.map(d => ({ value: d.value, color: d.color }))} />
+        <div className="flex justify-between mt-3 text-xs text-white/60">
+          {ingestionStatus.map((d, i) => (
+            <div key={i} className="flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+              {d.label}
+            </div>
+          ))}
+        </div>
+      </GlassCard>
+      <RecentDataCard datasets={recentDatasets} />
     </div>
   );
 }
