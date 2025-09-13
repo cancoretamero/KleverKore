@@ -12,6 +12,12 @@ export default function CommandPalette({ open, onClose, onRun }) {
     { k: 'Ir a Prospectividad 3D', cmd: 'open:prospect3d' },
     { k: 'Ir a Targets & Ranking', cmd: 'open:targets' },
     { k: 'Ir a Drill Designer', cmd: 'open:drill' },
+    { k: 'Ir a Gates & Decisión', cmd: 'open:gates' },
+    { k: 'Ir a QA/QC & Calibración', cmd: 'open:qaqc' },
+    { k: 'Ir a MLOps & Versionado', cmd: 'open:mlops' },
+    { k: 'Ir a Entregables', cmd: 'open:export' },
+    { k: 'Ir a Copiloto (LLM)', cmd: 'open:copilot' },
+    { k: 'Ir a Administración', cmd: 'open:admin' },
     { k: 'Exportar deck', cmd: 'export:deck' },
   ];
 
@@ -45,7 +51,9 @@ export default function CommandPalette({ open, onClose, onRun }) {
               {a.k}
             </button>
           ))}
-          {filtered.length === 0 && <div className="px-4 py-6 text-white/60">Sin resultados</div>}
+          {filtered.length === 0 && (
+            <div className="px-4 py-6 text-white/60">Sin resultados</div>
+          )}
         </div>
       </div>
     </div>
