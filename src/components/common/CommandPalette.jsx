@@ -11,6 +11,7 @@ export default function CommandPalette({ open, onClose, onRun }) {
     { k: 'Ir a Mapas 2D', cmd: 'open:maps2d' },
     { k: 'Ir a Prospectividad 3D', cmd: 'open:prospect3d' },
     { k: 'Ir a Targets & Ranking', cmd: 'open:targets' },
+    { k: 'Ir a Drill Designer', cmd: 'open:drill' },
     { k: 'Exportar deck', cmd: 'export:deck' },
   ];
 
