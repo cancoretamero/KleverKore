@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { brand } from './theme/brand';
-import { cx } from './lib/cx.js';
 import Sidebar from './layout/Sidebar.jsx';
 import Topbar from './layout/Topbar.jsx';
 import Home from './modules/Home.jsx';
@@ -9,6 +8,12 @@ import Maps2D from './modules/Maps2D.jsx';
 import Prospect3D from './modules/Prospect3D.jsx';
 import Targets from './modules/Targets.jsx';
 import Drill from './modules/Drill.jsx';
+import Gates from './modules/Gates.jsx';
+import QAQC from './modules/QAQC.jsx';
+import MLOps from './modules/MLOps.jsx';
+import Export from './modules/Export.jsx';
+import Copilot from './modules/Copilot.jsx';
+import Admin from './modules/Admin.jsx';
 import CommandPalette from './components/common/CommandPalette.jsx';
 import { useToasts } from './components/common/Toaster.jsx';
 
@@ -18,6 +23,7 @@ export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { push, UI: Toasts } = useToasts();
 
+  // Teclas rápidas: Ctrl/Cmd+K abre paleta; g,t,d,2,3,r,e para módulos
   useEffect(() => {
     const handleKey = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -29,6 +35,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
+  // Módulos visibles en la barra lateral
   const modules = [
     { id: 'home', label: 'Inicio', icon: '🏠' },
     { id: 'data', label: 'Datos & Ingesta', icon: '🗂️' },
@@ -36,6 +43,12 @@ export default function App() {
     { id: 'prospect3d', label: 'Prospectividad 3D', icon: '✨' },
     { id: 'targets', label: 'Targets & Ranking', icon: '🎯' },
     { id: 'drill', label: 'Drill Designer', icon: '🛠️' },
+    { id: 'gates', label: 'Gates & Decisión', icon: '🚦' },
+    { id: 'qaqc', label: 'QA/QC & Calibración', icon: '🧪' },
+    { id: 'mlops', label: 'MLOps & Versionado', icon: '🧬' },
+    { id: 'export', label: 'Entregables', icon: '📤' },
+    { id: 'copilot', label: 'Copiloto (LLM)', icon: '🤖' },
+    { id: 'admin', label: 'Administración', icon: '🛡️' },
   ];
 
   const Content = () => {
@@ -45,6 +58,12 @@ export default function App() {
     if (moduleId === 'prospect3d') return <Prospect3D />;
     if (moduleId === 'targets') return <Targets />;
     if (moduleId === 'drill') return <Drill />;
+    if (moduleId === 'gates') return <Gates />;
+    if (moduleId === 'qaqc') return <QAQC />;
+    if (moduleId === 'mlops') return <MLOps />;
+    if (moduleId === 'export') return <Export />;
+    if (moduleId === 'copilot') return <Copilot />;
+    if (moduleId === 'admin') return <Admin />;
     return null;
   };
 
@@ -67,10 +86,13 @@ export default function App() {
   }
 
   return (
-    <div className="relative w-full h-[100vh]" style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto' }}>
-      {/* Fondo antracita + Liquid Glass sutil SIEMPRE */}
+    <div
+      className="relative w-full h-[100vh]"
+      style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto' }}
+    >
+      {/* Fondo antracita + Liquid Glass sutil */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0" style={{ background: brand.bg }} />
+      <div className="absolute inset-0" style={{ background: brand.bg }} />
         <div className="absolute inset-0 overflow-hidden">
           <svg className="absolute inset-0 w-[140%] h-[140%] -top-20 -left-20 opacity-30">
             <defs>
