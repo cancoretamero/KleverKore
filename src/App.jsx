@@ -8,6 +8,7 @@ import DataIngesta from './modules/DataIngesta.jsx';
 import Maps2D from './modules/Maps2D.jsx';
 import Prospect3D from './modules/Prospect3D.jsx';
 import Targets from './modules/Targets.jsx';
+import Drill from './modules/Drill.jsx';
 import CommandPalette from './components/common/CommandPalette.jsx';
 import { useToasts } from './components/common/Toaster.jsx';
 
@@ -34,6 +35,7 @@ export default function App() {
     { id: 'maps2d', label: 'Mapas 2D', icon: '🗺️' },
     { id: 'prospect3d', label: 'Prospectividad 3D', icon: '✨' },
     { id: 'targets', label: 'Targets & Ranking', icon: '🎯' },
+    { id: 'drill', label: 'Drill Designer', icon: '🛠️' },
   ];
 
   const Content = () => {
@@ -42,6 +44,7 @@ export default function App() {
     if (moduleId === 'maps2d') return <Maps2D />;
     if (moduleId === 'prospect3d') return <Prospect3D />;
     if (moduleId === 'targets') return <Targets />;
+    if (moduleId === 'drill') return <Drill />;
     return null;
   };
 
